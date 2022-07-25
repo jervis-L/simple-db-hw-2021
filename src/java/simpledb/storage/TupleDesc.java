@@ -7,6 +7,7 @@ import java.util.*;
 
 /**
  * TupleDesc describes the schema of a tuple.
+ * a little testing here
  */
 public class TupleDesc implements Serializable {
 
