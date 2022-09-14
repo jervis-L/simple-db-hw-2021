@@ -68,7 +68,7 @@ public class BTreeFileInsertTest extends SimpleDbTestBase {
 		BTreeLeafPage otherPage;
 		if(page.getLeftSiblingId() != null) {
 			otherPage = (BTreeLeafPage) dirtypages.get(page.getLeftSiblingId());
-			assertTrue(field.compare(Op.GREATER_THAN_OR_EQ, 
+            assertTrue(field.compare(Op.GREATER_THAN_OR_EQ,
 					otherPage.reverseIterator().next().getField(keyField)));
 		}
 		else { // page.getRightSiblingId() != null

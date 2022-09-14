@@ -29,25 +29,38 @@ public class Delete extends Operator {
      * @param child
      *            The child operator from which to read tuples for deletion
      */
+    private TransactionId t;
+    private OpIterator child;
+    private int count=0;
+    private boolean flag=false;
     public Delete(TransactionId t, OpIterator child) {
         // some code goes here
+        this.t=t;
+        this.child=child;
     }
 
     public TupleDesc getTupleDesc() {
         // some code goes here
-        return null;
+        return new TupleDesc(new Type[]{Type.INT_TYPE});
     }
 
     public void open() throws DbException, TransactionAbortedException {
         // some code goes here
+        super.open();
+        child.open();
     }
 
     public void close() {
         // some code goes here
+        child.close();
+        super.close();
     }
 
     public void rewind() throws DbException, TransactionAbortedException {
         // some code goes here
+        child.rewind();
+        flag=false;
+        count=0;
     }
 
     /**
@@ -61,18 +74,35 @@ public class Delete extends Operator {
      */
     protected Tuple fetchNext() throws TransactionAbortedException, DbException {
         // some code goes here
+        if(!flag){
+            while (child.hasNext()){
+                try {
+                    Tuple tuple=child.next();
+                    Database.getBufferPool().deleteTuple(t,tuple);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                count++;
+            }
+            flag=true;
+            IntField field=new IntField(count);
+            Tuple res=new Tuple(getTupleDesc());
+            res.setField(0,field);
+            return res;
+        }
         return null;
     }
 
     @Override
     public OpIterator[] getChildren() {
         // some code goes here
-        return null;
+        return new OpIterator[]{child};
     }
 
     @Override
     public void setChildren(OpIterator[] children) {
         // some code goes here
+        child=children[0];
     }
 
 }

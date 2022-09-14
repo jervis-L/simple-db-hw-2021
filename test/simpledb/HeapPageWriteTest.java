@@ -68,6 +68,7 @@ public class HeapPageWriteTest extends SimpleDbTestBase {
             // on the page
             Iterator<Tuple >it = page.iterator();
             boolean found = false;
+
             while (it.hasNext()) {
                 Tuple tup = it.next();
                 if (TestUtil.compareTuples(addition, tup)) {

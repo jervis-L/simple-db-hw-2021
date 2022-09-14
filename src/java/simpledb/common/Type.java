@@ -22,8 +22,9 @@ public enum Type implements Serializable {
         @Override
         public Field parse(DataInputStream dis) throws ParseException {
             try {
-                return new IntField(dis.readInt());
-            }  catch (IOException e) {
+                int i=dis.readInt();
+                return new IntField(i);
+            }  catch (Exception e) {
                 throw new ParseException("couldn't parse", 0);
             }
         }

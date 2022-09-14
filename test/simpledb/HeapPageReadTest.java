@@ -43,6 +43,11 @@ public class HeapPageReadTest extends SimpleDbTestBase {
         { 62778, 21122 },
         { 17197, 16388 }
     };
+//public static final int[][] EXAMPLE_VALUES = new int[][] {
+//        { 31933, 862 , 673},
+//        { 29402, 56883, 456},
+//        { 1468, 5825, 6345},
+//};
 
     public static final byte[] EXAMPLE_DATA;
     static {
@@ -86,6 +91,23 @@ public class HeapPageReadTest extends SimpleDbTestBase {
     /**
      * Unit test for HeapPage.iterator()
      */
+//    @Test public void testIterator() throws Exception {
+//        HeapPage page = new HeapPage(pid, EXAMPLE_DATA);
+//        Iterator<Tuple> it = page.iterator();
+//
+//        int row = 0;
+//        while (it.hasNext()) {
+//            Tuple tup = it.next();
+//            IntField f0 = (IntField) tup.getField(0);
+//            IntField f1 = (IntField) tup.getField(1);
+//            IntField f2 = (IntField) tup.getField(2);
+//
+//            assertEquals(EXAMPLE_VALUES[row][0], f0.getValue());
+//            assertEquals(EXAMPLE_VALUES[row][1], f1.getValue());
+//            assertEquals(EXAMPLE_VALUES[row][2], f2.getValue());
+//            row++;
+//        }
+//    }
     @Test public void testIterator() throws Exception {
         HeapPage page = new HeapPage(pid, EXAMPLE_DATA);
         Iterator<Tuple> it = page.iterator();
@@ -119,7 +141,7 @@ public class HeapPageReadTest extends SimpleDbTestBase {
         for (int i = 0; i < 20; ++i)
             assertTrue(page.isSlotUsed(i));
 
-        for (int i = 20; i < 504; ++i)
+        for (int i = 20; i < 484; ++i)
             assertFalse(page.isSlotUsed(i));
     }
 

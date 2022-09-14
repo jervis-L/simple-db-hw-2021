@@ -20,7 +20,7 @@ import simpledb.transaction.TransactionId;
 public abstract class BTreePage implements Page {
 	protected volatile boolean dirty = false;
 	protected volatile TransactionId dirtier = null;
-
+	//4个字节
 	protected final static int INDEX_SIZE = Type.INT_TYPE.getLen();
 
 	protected final BTreePageId pid;

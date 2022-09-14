@@ -54,6 +54,7 @@ public class LogTest extends SimpleDbTestBase {
         while(scan.hasNext()){
             Tuple tu = scan.next();
             int x = ((IntField)tu.getField(0)).getValue();
+            System.out.println(x);
             if(x == v1)
                 count = count + 1;
         }

@@ -68,17 +68,16 @@ public class BTreeFileInsertTest extends SimpleDbTestBase {
 		tup = BTreeUtility.getBTreeTuple(753, 2);
 		empty.insertTuple(tid, tup);
 		assertEquals(4, empty.numPages());
-
-		// now make sure the records are sorted on the key field
+        // now make sure the records are sorted on the key field
 		DbFileIterator it = empty.iterator(tid);
 		it.open();
 		int prev = -1;
 		while(it.hasNext()) {
 			Tuple t = it.next();
 			int value = ((IntField) t.getField(0)).getValue();
-			assertTrue(value >= prev);
+            assertTrue(value >= prev);
 			prev = value;
-		} 
+		}
 	}
 
 	@Test public void addDuplicateTuples() throws Exception {

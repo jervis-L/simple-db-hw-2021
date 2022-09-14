@@ -2,6 +2,7 @@ package simpledb.common;
 
 import simpledb.storage.BufferPool;
 import simpledb.storage.LogFile;
+import simpledb.transaction.LockManager;
 
 import java.io.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -17,9 +18,13 @@ import java.util.concurrent.atomic.AtomicReference;
  * @Threadsafe
  */
 public class Database {
+    //以原子方式更新对象引用
+    //可以看出这是单例模式，static final变量保留着唯一一个Database实例，并不允许修改
+    //不过这个饿汉式单例不允许访问自身，只是提供访问Catalog/BufferPool的方式
     private static final AtomicReference<Database> _instance = new AtomicReference<>(new Database());
     private final Catalog _catalog;
     private final BufferPool _bufferpool;
+    private final LockManager _lockmanager;
 
     private final static String LOGFILENAME = "log";
     private final LogFile _logfile;
@@ -27,6 +32,7 @@ public class Database {
     private Database() {
         _catalog = new Catalog();
         _bufferpool = new BufferPool(BufferPool.DEFAULT_PAGES);
+        _lockmanager=new LockManager();
         LogFile tmp = null;
         try {
             tmp = new LogFile(new File(LOGFILENAME));
@@ -52,6 +58,9 @@ public class Database {
     public static Catalog getCatalog() {
         return _instance.get()._catalog;
     }
+    /** Return the catalog of the static Database instance */
+
+    public static LockManager getLockManager(){return _instance.get()._lockmanager;}
 
     /**
      * Method used for testing -- create a new instance of the buffer pool and
@@ -59,10 +68,14 @@ public class Database {
      */
     public static BufferPool resetBufferPool(int pages) {
         java.lang.reflect.Field bufferPoolF=null;
+        java.lang.reflect.Field LockManagerF=null;
         try {
             bufferPoolF = Database.class.getDeclaredField("_bufferpool");
             bufferPoolF.setAccessible(true);
             bufferPoolF.set(_instance.get(), new BufferPool(pages));
+            LockManagerF=Database.class.getDeclaredField("_lockmanager");
+            LockManagerF.setAccessible(true);
+            LockManagerF.set(_instance.get(),new LockManager());
         } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException | SecurityException e) {
             e.printStackTrace();
         }

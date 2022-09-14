@@ -261,7 +261,8 @@ public class BTreeFileDeleteTest extends SimpleDbTestBase {
 		BTreeFile bigFile = BTreeUtility.createRandomBTreeFile(2, 31125,
 				null, null, 0);
 
-		BTreeChecker.checkRep(bigFile, tid, new HashMap<>(), true);
+        System.out.println("numPages "+bigFile.numPages());
+        BTreeChecker.checkRep(bigFile, tid, new HashMap<>(), true);
 
 		Database.resetBufferPool(500); // we need more pages for this test
 
@@ -302,6 +303,7 @@ public class BTreeFileDeleteTest extends SimpleDbTestBase {
 			Database.getBufferPool().deleteTuple(tid, it.next());
 			it.rewind();
 		}
+
 
 		BTreeChecker.checkRep(bigFile, tid, new HashMap<>(), true);
 

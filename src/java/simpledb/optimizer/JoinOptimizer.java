@@ -6,6 +6,7 @@ import simpledb.execution.*;
 import simpledb.storage.TupleDesc;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -130,7 +131,7 @@ public class JoinOptimizer {
             // HINT: You may need to use the variable "j" if you implemented
             // a join algorithm that's more complicated than a basic
             // nested-loops join.
-            return -1.0;
+            return cost1+card1*cost2+card1*card2;
         }
     }
 
@@ -176,6 +177,11 @@ public class JoinOptimizer {
                                                    Map<String, Integer> tableAliasToId) {
         int card = 1;
         // some code goes here
+        if(joinOp == Predicate.Op.EQUALS){
+            if(t1pkey) card = card2;
+            else if(t2pkey) card = card1;
+            else card = Math.max(card1, card2);
+        }else card = (int)(0.3*card1*card2);
         return card <= 0 ? 1 : card;
     }
 
@@ -194,7 +200,6 @@ public class JoinOptimizer {
         els.add(new HashSet<>());
         // Iterator<Set> it;
         // long start = System.currentTimeMillis();
-
         for (int i = 0; i < size; i++) {
             Set<Set<T>> newels = new HashSet<>();
             for (Set<T> s : els) {
@@ -206,9 +211,7 @@ public class JoinOptimizer {
             }
             els = newels;
         }
-
         return els;
-
     }
 
     /**
@@ -238,7 +241,25 @@ public class JoinOptimizer {
 
         // some code goes here
         //Replace the following
-        return joins;
+        PlanCache pc=new PlanCache();
+        Set<LogicalJoinNode> set=new HashSet<>(joins);
+        for(int i=1;i<=joins.size();i++){
+            for(Set<LogicalJoinNode> joinset:enumerateSubsets(joins,i)){
+                CostCard bestcostCard=new CostCard();
+                double bestCostSofar=Double.MAX_VALUE;
+                for(LogicalJoinNode joinToRemove:joinset){
+                    CostCard costCard=computeCostAndCardOfSubplan(stats,filterSelectivities,joinToRemove,joinset,bestCostSofar,pc);
+                    if(costCard!=null) {
+                        bestcostCard=costCard;
+                        bestCostSofar=bestcostCard.cost;
+                    }
+                }
+                pc.addPlan(joinset,bestcostCard.cost,bestcostCard.card,bestcostCard.plan);
+            }
+        }
+        if(explain)
+            printJoins(joins, pc, stats, filterSelectivities);
+        return pc.getOrder(set);
     }
 
     // ===================== Private Methods =================================

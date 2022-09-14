@@ -24,8 +24,11 @@ import simpledb.storage.RecordId;
  */
 public class BTreeInternalPage extends BTreePage {
 	private final byte[] header;
+	//存储的键值，
 	private final Field[] keys;
+	//指向子节点的指针
 	private final int[] children;
+
 	private final int numSlots;
 	
 	private int childCategory; // either leaf or internal
@@ -40,6 +43,8 @@ public class BTreeInternalPage extends BTreePage {
 			assert(null == prev || prev.compare(Op.LESS_THAN_OR_EQ,f));
 			prev = f;
 		}
+
+        System.out.println();
 
         assert null == upperBound || null == prev || (prev.compare(Op.LESS_THAN_OR_EQ, upperBound));
 
